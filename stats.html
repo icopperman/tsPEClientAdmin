@@ -1,0 +1,631 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Patient Engagement Tablets Dashboard</title>
+
+    <!--
+    <script src="js/vendor/jquery-2.1.4.js"></script>
+    <script src="js/vendor/jquery-ui.js"></script>
+
+    <script src="js/vendor/lodash.js"></script>
+    <script src="js/vendor/bootstrap.js"></script>
+    <script src="js/vendor/moment.min.js"></script>
+    <link href="styles/bootstrap.css" rel="stylesheet" />
+    <link href="styles/sidebar.css" rel="stylesheet" />
+    <link href="styles/jquery-ui.css" rel="stylesheet" />
+    <link href="styles/jquery.jqplot.min.css" rel="stylesheet" />
+    <script src="js/vendor/jquery.jqplot.min.js"></script>
+    <script src="js/vendor/jqplot.canvasAxisTickRenderer.min.js"></script>
+    <script src="js/vendor/jqplot.barRenderer.min.js"></script>
+    <script src="js/vendor/jqplot.canvasTextRenderer.min.js"></script>
+    <script src="js/vendor/jqplot.categoryAxisRenderer.min.js"></script>
+    <script src="js/vendor/jqplot.dateAxisRenderer.min.js"></script>
+    <script src="js/vendor/jqplot.pointLabels.min.js"></script>
+    <script src="js/vendor/excanvas.min.js"></script>
+    <script src="js/app/emails.js"></script>
+    <script src="js/app/tablets.js"></script>
+    <script src="js/app/users.js"></script>
+    <script src="js/app/units.js"></script>
+    
+    <script src="js/app/graphing.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/5.4.2/Rx.min.js"></script>
+-->
+    <script src="js/app/stats.ts"></script>
+    <script src="js/app/appcommon.ts"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs-dom/7.0.3/rx.dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs-jquery/1.1.6/rx.jquery.min.js"></script>-->
+   
+    <!--[if lte IE 9]>
+    <script type='text/javascript' src='js/app/jQuery.XDomainRequest.js'></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+        <link href="styles/bootstrap-ie7.css" rel="stylesheet">
+    <![endif]-->
+
+</head>
+
+<body>
+    <div id="divAddResource" class="modal fade" role="dialog" style="top: 25%; left: 25%;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="resourceSave('cancel')" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+                    <h4 id="promptHdrResource" class="modal-title">Add New Unit</h4>
+                </div>
+                <div class="modal-body" style="padding: 10px 20px 10px 0px;">
+                    <form class="form-horizontal" role="form" id="frmAddResource">
+
+                        <div class="form-group" id="divResourceName">
+                            <label id="lblResourceName" for="resourceName" class="control-label col-sm-3">Enter Unit Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="resourceName" name="resourceName" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="divResourceUserType">
+                            <label for="rbUserType" class="control-label col-sm-3">Enter User Type</label>
+                            <div class="col-sm-9">
+                                <label class="radio"><input type="radio" name="rbUserType" id="rbUserType1" value="1">User</label>
+                                <label class="radio"><input type="radio" name="rbUserType" id="rbUserType4" value="4">Admin</label>
+                                <label class="radio"><input type="radio" name="rbUserType" id="rbUserType2" value="2">NC User</label>
+                                <label class="radio"><input type="radio" name="rbUserType" id="rbUserType8" value="8">NC Admin</label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="divResourceCampus">
+                            <label for="resourceCampus" class="control-label col-sm-3">For Campus</label>
+                            <div class="col-sm-9">
+                                <label class="radio-inline"><input type="radio" name="resourceCampus" id="resourceCampusE" value="E">East</label>
+                                <label class="radio-inline"><input type="radio" name="resourceCampus" id="resourceCampusW" value="W">West</label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="divResourceUnits">
+                            <label for="resourceUnits" class="control-label col-sm-3">For Unit</label>
+                            <div class="col-sm-9">
+                                <select id="resourceUnits" name="resourceUnits" class="form-control"></select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="divResourceUnitType">
+                            <label for="unitType" class="control-label col-sm-3">Type of Unit</label>
+                            <div class="col-sm-9">
+
+                                <label class="radio"><input type="radio" name="rbUnitType" id="rbUnitType0" value="0">Inactive</label>
+                                <label class="radio"><input type="radio" name="rbUnitType" id="rbUnitType1" value="1">Clinical(Beds)</label>
+
+                                <label class="radio"><input type="radio" name="rbUnitType" id="rbUnitType2" value="2">Clinical(NoBeds)</label>
+                                <label class="radio"><input type="radio" name="rbUnitType" id="rbUnitType3" value="3">Non-Clinical</label>
+                            </div>
+                        </div>
+                        <p id="promptErrorResource" style="color: red;padding-left: 20px;"></p>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="resourceCancel" onclick="resourceSave('cancel')" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" id="resourceSave" onclick="resourceSave('save')" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <div id="divAssignTablet" class="modal fade" role="dialog" style="top: 25%; left: 25%;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="tabletAssign('cancel')" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+                    <h4 id="promptHdrAssignTablet" class="modal-title">Assign Tablet</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <select id="tabletAssignUsers" name="tabletAssignUsers" class="form-control input-lg"></select>
+                        <p id="promptErrorAssignTablet" style="color: red;"></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="tabletAssignCancel" onclick="tabletAssign('cancel')" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" id="tabletAssignSave" onclick="tabletAssign('save')" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <!--<div id="divAddEmail" class="modal fade" role="dialog" style="top: 25%; left: 25%;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="emailSave('cancel')" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+                    <h4 id="promptHdrEmail" class="modal-title">Add New Email Address</h4>
+                </div>
+                <div class="modal-body" style="padding: 10px 20px 10px 0px;">
+                    <form class="form-horizontal" role="form" id="frmAddEmail">
+
+                        <div class="form-group">
+                            <label for="emailName" class="control-label col-sm-3">Enter Email Address</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="emailName" name="emailName" class="form-control" />
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label for="emailCampus" class="control-label col-sm-3">For Campus</label>
+                            <div class="col-sm-9">
+                                <label class="radio-inline"><input type="radio" name="emailCampus" id="emailCampusE" value="E">East</label>
+                                <label class="radio-inline"><input type="radio" name="emailCampus" id="emailCampusW" value="W">West</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="emailUnits" class="control-label col-sm-3">For Unit</label>
+                            <div class="col-sm-9">
+                                <select id="emailUnits" name="emailUnits" class="form-control"></select>
+                            </div>
+                        </div>
+                        <p id="promptErrorEmail" style="color: red;;padding-left: 20px;"></p>
+
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="emailCancel" onclick="emailSave('cancel')" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" id="emailSave" onclick="emailSave('save')" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+    <!--<div id="divAddTablet" class="modal fade" role="dialog" style="top: 25%; left: 25%;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="tabletSave('cancel')" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+                    <h4 id="promptHdrTablet" class="modal-title">Add New Tablet</h4>
+                </div>
+                <div class="modal-body" style="padding: 10px 20px 10px 10px;">
+                    <form class="form-horizontal" role="form" id="frmAddTablet">
+
+                        <div class="form-group">
+                            <label for="tabletName" class="control-label col-sm-3">Enter Tablet Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="tabletName" name="tabletName" class="form-control input-lg" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tabletCampus" class="control-label col-sm-3">For Campus</label>
+                            <div class="col-sm-9">
+                                <label class="radio-inline"><input type="radio" name="tabletCampus" id="tabletCampusE" value="E">East</label>
+                                <label class="radio-inline"><input type="radio" name="tabletCampus" id="tabletCampusW" value="W">West</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tabletUnits" class="control-label col-sm-3">For Unit</label>
+                            <div class="col-sm-9">
+                                <select id="tabletUnits" name="tabletUnits" class="form-control"></select>
+                            </div>
+                        </div>
+                        <p id="promptErrorTablet" style="color: red;padding-left: 20px;"></p>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="tabletCancel" onclick="tabletSave('cancel')" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" id="tabletSave" onclick="tabletSave('save')" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+    <!--<div id="divAddUser" class="modal fade" role="dialog" style="top: 25%; left: 25%;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="userSave('cancel')" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+                    <h4 id="promptHdrUser" class="modal-title">Add New Email Address</h4>
+                </div>
+                <div class="modal-body" style="padding: 10px 20px 10px 0px;">
+                    <form class="form-horizontal" role="form" id="frmAddUser">
+                        <div class="form-group">
+
+                            <label for="userName" class="control-label col-sm-3">Enter User CWID</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="userName" name="userName" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                            <label for="userType" class="control-label col-sm-3">Enter User Type</label>
+                            <div class="col-sm-9">
+                                <label class="radio"><input type="radio" name="userType" id="user" value="1">User</label>
+                                <label class="radio"><input type="radio" name="userType" id="admin" value="4">Admin</label>
+                                <label class="radio"><input type="radio" name="userType" id="ncuser" value="2">NC User</label>
+                                <label class="radio"><input type="radio" name="userType" id="ncadmin" value="8">NC Admin</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="userCampus" class="control-label col-sm-3">For Campus</label>
+                            <div class="col-sm-9">
+
+                                <label class="radio-inline"><input type="radio" name="userCampus" id="userCampusE" value="E">East</label>
+                                <label class="radio-inline"><input type="radio" name="userCampus" id="userCampusW" value="W">West</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="userUnits" class="control-label col-sm-3">For Unit</label>
+                            <div class="col-sm-9">
+                                <select id="userUnits" name="userUnits" class="form-control"></select>
+                            </div>
+                        </div>
+                        <p id="promptErrorUser" style="color: red;padding-left: 20px;"></p>
+                    </form>
+
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" id="userCancel" onclick="userSave('cancel')" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" id="userSave" onclick="userSave('save')" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+
+    </div>-->
+    <!--<div id="divAddUnit" class="modal fade" role="dialog" style="top: 25%; left: 25%;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="unitSave('cancel')" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+                    <h4 id="promptHdrUnit" class="modal-title">Add New Unit</h4>
+                </div>
+                <div class="modal-body" style="padding: 10px 20px 10px 0px;">
+                    <form class="form-horizontal" role="form" id="frmAddUnit">
+
+                        <div class="form-group">
+                            <label for="unitName" class="control-label col-sm-3">Enter Unit Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="unitName" name="unitName" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="unitCampus" class="control-label col-sm-3">For Campus</label>
+                            <div class="col-sm-9">
+
+                                <label class="radio-inline"><input type="radio" name="unitCampus" id="East" value="E">East</label>
+                                <label class="radio-inline"><input type="radio" name="unitCampus" id="West" value="W">West</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="unitType" class="control-label col-sm-3">Type of Unit</label>
+                            <div class="col-sm-9">
+
+                                <label class="radio"><input type="radio" name="unitType" id="rbUnitType0" value="0">Inactive</label>
+                                <label class="radio"><input type="radio" name="unitType" id="rbUnitType1" value="1">Clinical(Beds)</label>
+
+                                <label class="radio"><input type="radio" name="unitType" id="rbUnitType2" value="2">Clinical(NoBeds)</label>
+                                <label class="radio"><input type="radio" name="unitType" id="rbUnitType3" value="3">Non-Clinical</label>
+                            </div>
+                        </div>
+                        <p id="promptErrorUnit" style="color: red;padding-left: 20px;"></p>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="unitCancel" onclick="unitSave('cancel')" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" id="unitSave" onclick="unitSave('save')" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper" style="background-color: #82a6e6; padding-left: 0px; padding-right: 0px;">
+
+            <h3 style="padding-left: 20px; padding-right: 20px;">Manage Resources</h3>
+
+            <!--<div id="selCampuses" class="btn-group btn-group-lg" data-toggle="buttons" style="width: 100%; padding-top: 0px; padding-bottom: 30px; padding-left: 30px; padding-right: 30px;">
+                <label id="lblWest" class="btn btn-primary " style="width: 50%;">
+                    <input id="rbWest" type="radio" name="campuses" autocomplete="off" checked />West
+                </label>
+                <label id="lblEast" class="btn btn-primary" style="width: 50%;">
+                    <input id="rbEast" type="radio" name="campuses" autocomplete="off">East
+                </label>
+
+            </div>-->
+
+            <div id="divButtons" style="width: 80%; margin: 20px;">
+                <!--<div id="rbClinical" style="margin: 20px;">
+                    <label class="radio-inline">
+                        <input type="radio" name="adminType" id="clinical" value="clinical" checked>Clinical
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="adminType" id="nonclinical" value="nonclinical" />Non-Clinical
+                    </label>
+                </div>-->
+                <div class="btn-group-vertical btn-block" style="width: 100%;">
+
+                    <a id="manageUnits" name="Unit" role="button" href="#" class="btn btn-primary">Manage Units</a><br />
+                    <a id="manageUsers" name="User" role="button" href="#" class="btn btn-primary">Manage Users</a><br />
+                    <a id="manageTablets" name="Tablet" role="button" href="#" class="btn btn-primary">Manage Tablets</a><br />
+                    <a id="manageEmails" name="Email" role="button" href="#" class="btn btn-primary">Manage Emails</a><br />
+                    <!--<div class="checkbox ">
+                        <label><input type="checkbox" value="East">East</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="West">West</label>
+                    </div>-->
+                    <!--<fieldset class="group">
+                        <legend>select campus</legend>
+                        <ul class="checkbox">
+                            <li style="display:inline-block;"><input type="checkbox" id="cb1" value="East" /><label for="cb1">East</label></li>
+                            <li style="display:inline-block;"><input type="checkbox" id="cb2" value="West" /><label for="cb2">West</label></li>
+                            <li style="display:inline-block;"><input type="checkbox" id="cb6" value="Both" /><label for="cb6>">Both</label></li>
+                        </ul>
+                    </fieldset>-->
+                    <a role="button" href="#" class="btn btn-primary" id="btnLogoff" name="btnLogoff">Sign Out</a>
+
+                </div>
+
+
+            </div>
+
+            <div id="divStatsSB" style="display: none;">
+
+                <div id="rbsTypes" style="padding-left: 30px; padding-right: 30px; padding-bottom: 30px;">
+
+                    <label class="radio-inline">
+                        <input type="radio" name="stattype" id="byunit" value="1" checked>By Unit
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="stattype" id="bytablet" value="2" />By Tablet
+                    </label>
+                </div>
+
+                <form id="frmDates">
+                    <div class="form-group" style="padding-left: 30px; padding-right: 30px;">
+                        <label for="startdate" style="color: white">Start date</label>
+                        <input type="text" class="form-control input-sm" id="startdate" name="startdate" placeholder="Start">
+                    </div>
+                    <div class="form-group" style="padding-left: 30px; padding-right: 30px;">
+                        <label for="enddate" style="color: white">End date</label>
+                        <input type="text" class="form-control input-sm" id="enddate" name="enddate" placeholder="End">
+                    </div>
+                    <a role="button" href="#" class="btn btn-primary btn-xs pull-right " style="margin-left: 30px; margin-right: 30px; margin-bottom: 30px;"
+                       id="btnChgDates" name="btnChgDates">Chg Dates</a>
+
+                    <div id="divTabletsSB" class="form-group" style="padding-left: 30px; padding-right: 30px; padding-top: 30px;">
+                        <label for="tablets" style="color: black; font-size: large;">Tablets</label>
+                        <select class="form-control input-sm" id="tablets" name="tablets"><option value="0">--select one--</option></select>
+                    </div>
+
+                </form>
+
+                <div id="divUnitsSB">
+
+                    <h3 style="padding-left: 30px; padding-right: 30px; padding-top: 30px;">Units</h3>
+
+                    <div id="rbsUnits" style="padding-left: 30px; padding-right: 30px; padding-bottom: 10px;">
+
+                        <label class="radio-inline">
+                            <input type="radio" name="displaytype" id="usage" value="1" checked>Usage
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="displaytype" id="history" value="3" />Activity
+                        </label>
+                    </div>
+
+                    <ul id="westUnits" class="list-group" style="padding-left: 30px; padding-right: 30px;"></ul>
+                    <ul id="eastUnits" class="list-group" style="padding-left: 30px; padding-right: 30px;"></ul>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <a href="#sidebar-toggle" class="btn btn-primary btn-sm" id="sidebar-toggle">
+                            <span id="sidebar-toggle-img" class="glyphicon glyphicon-arrow-left"></span>
+                        </a>
+
+                        <br />
+                        <br />
+
+                        <div id="divAlert" class="alert alert-danger" role="alert" style="display: none;">
+                            <span id="msgIcon" class="glyphicon glyphicon-exclamation-sign"></span>
+                            <span id="msgAlert"></span>
+                        </div>
+
+                        <br />
+                        <br />
+                        <br />
+
+                        <div id="divCampusFilter" style="display:none;">
+
+                            <span>Filter by Campus:</span>
+                            <label class="radio-inline"><input type="radio" id="rbCampusesE" name="rbCampuses" value="E">East</label>
+                            <label class="radio-inline"><input type="radio" id="rbCampusesW" name="rbCampuses" value="W">West</label>
+                            <label class="radio-inline"><input type="radio" id="rbCampusesB" name="rbCampuses" value="B">Both</label>
+                        </div>
+                        <div id="divResource" style="display: none;">
+
+                            <div id="divAlertResource" class="alert alert-danger" role="alert" style="display: none;">
+                                <span id="msgIconResource" class="glyphicon glyphicon-exclamation-sign"></span>
+                                <span id="msgAlertResource"></span>
+                            </div>
+                            <a role="button" href="#" class="btn btn-primary btn-lg pull-right" style="margin: 10px;" id="btnAddResource" name="btnAddResource">Add Tablet</a>
+                            <br /> <h3 id="hdrResource">Tablets</h3>
+                            <table class="table table-bordered table-hover" id="tblResource"></table>
+                        </div>
+                        <!--<div id="divUnitFilter" style="display:none;">
+
+                            <span>Filter by Unit Type: </span>
+                            <label class="radio-inline"><input type="radio" id="rbEast" name="rbCampuses" value="E">East</label>
+                            <label class="radio-inline"><input type="radio" id="rbWest" name="rbCampuses" value="W">West</label>
+                            <label class="radio-inline"><input type="radio" id="rbBoth" name="rbCampuses" value="B">Both</label>
+                        </div>-->
+                        <!--<div id="divEmails" style="display: none;">
+                            <div id="divAlertEmail" class="alert alert-danger" role="alert" style="display: none;">
+                                <span id="msgIconEmail" class="glyphicon glyphicon-exclamation-sign"></span>
+                                <span id="msgAlertEmail"></span>
+                            </div>
+                            <a role="button" href="#" class="btn btn-primary btn-lg pull-right" style="margin: 10px;" id="btnAddEmail" name="btnAddEmail">Add Email</a>
+                            <br /><h3 id="hdrEmails">Email addresses to receive alerts for missing tablets</h3>
+                            <table class="table table-bordered table-hover" id="tblEmails"></table>
+                        </div>-->
+                        <!--<div id="divTablets" style="display: none;">
+
+                            <div id="divAlertTablet" class="alert alert-danger" role="alert" style="display: none;">
+                                <span id="msgIconTablet" class="glyphicon glyphicon-exclamation-sign"></span>
+                                <span id="msgAlertTablet"></span>
+                            </div>
+                            <a role="button" href="#" class="btn btn-primary btn-lg pull-right" style="margin: 10px;" id="btnAddTablet" name="btnAddTablet">Add Tablet</a>
+                            <br /> <h3 id="hdrTablets">Tablets</h3>
+                            <table class="table table-bordered table-hover" id="tblTablets"></table>
+                        </div>-->
+                        <!--<div id="divUsers" style="display: none;">
+
+                            <div id="divAlertUser" class="alert alert-danger" role="alert" style="display: none;">
+                                <span id="msgIconUser" class="glyphicon glyphicon-exclamation-sign"></span>
+                                <span id="msgAlertUser"></span>
+                            </div>
+
+                            <a role="button" href="#" class="btn btn-primary btn-lg pull-right" style="margin: 10px;" id="btnAddUser" name="btnAddUser">Add User</a>
+                            <br />  <h3 id="hdrUsers">Users</h3>
+                            <table class="table table-bordered table-hover" id="tblUsers"></table>
+                        </div>-->
+                        <!--<div id="divUnits" style="display: none;">
+
+                            <div id="divAlertUnit" class="alert alert-danger" role="alert" style="display: none;">
+                                <span id="msgIconUnit" class="glyphicon glyphicon-exclamation-sign"></span>
+                                <span id="msgAlertUnit"></span>
+                            </div>
+
+                            <a role="button" href="#" class="btn btn-primary btn-lg pull-right" style="margin: 10px;" id="btnAddUnit" name="btnAddUnit">Add Unit</a>
+                            <br /> <h3 id="hdrUnits">Units</h3>
+                            <table class="table table-bordered table-hover" id="tblUnits"></table>
+                        </div>-->
+
+
+                        <!--<div id="divStats" style="display: none;">
+                            <h1 id="unitHeader" style="padding-top: 10px;">
+                                Tablet Statistics for
+                                <span id="campusHdr"></span>
+                                <span id="unitHdr"></span>
+                            </h1>
+                            <div id="divAlert" class="alert alert-danger" role="alert" style="display: none;">
+                                <span id="msgIcon" class="glyphicon glyphicon-exclamation-sign"></span>
+                                <span id="msgAlert"></span>
+                            </div>
+                            <br />
+                            <div>
+                                <h2>
+                                    Tablets broken or missing? Start a
+                                    <a href="https://nypres.service-now.com/nyp-portal/" target="_blank"><span style="color: red;"> Service Desk</span></a>                                    ticket
+                                </h2>
+                            </div>
+                            <br />
+                            <div>
+                                <h4 id="countOfTablets"></h4>
+                            </div>
+
+                            <br />
+                            <div id="myChart" style="width: 80%;"></div>
+                            <br />
+                            <div id="divSummary">
+
+                                <h3 id="hdrSummary"></h3>
+                                <table class="table table-bordered table-hover" style="width: 50%;" id="tblSummary"></table>
+                            </div>
+
+                            <div id="divNotReturned">
+
+                                <h3 id="hdrNotReturned"></h3>
+                                <table class="table table-bordered table-hover" id="tblNotReturned"></table>
+                            </div>
+
+                            <br />
+                            <div id="divCensus">
+                                <h3 id="hdrCensus"></h3>
+                                <table class="table table-bordered table-hover" id="tblCensus"></table>
+                            </div>
+                            <br />
+                            <br />
+                            <div id="divActivity">
+
+                                <h3 id="hdrActivity"></h3>
+                                <table class="table table-bordered table-hover" id="tblActivity"></table>
+                            </div>
+                        </div>-->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            initApp();
+
+        });
+    </script>
+</body>
+
+</html>
+
+<!--<div id="waitForBedInfo" class="modal fade" role="dialog" style="top: 25%; left: 25%;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="waitingUnit" class="modal-title">Retrieving bed information for unit</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Please wait&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <p>Processing&hellip;</p>
+                </div>
+            </div>
+        </div>
+    </div>-->
+<!--<div id="divAddEmail" class="modal fade" role="dialog" style="top: 25%; left: 25%;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="emailSave('cancel')" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+                <h4 id="promptHdrEmail" class="modal-title">Add New Email Address</h4>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <input type="text" id="emailAddress" name="emailAddress" class="form-control input-lg" />
+                    <br /><br />
+                    <label class="radio-inline"><input type="radio" name="emailCampus" id="emailCampusE" value="E">East</label>
+                    <label class="radio-inline"><input type="radio" name="emailCampus" id="emailCampusW" value="W">West</label>
+                    <br /><br />
+                    <select id="emailUnits" name="emailUnits">
+
+                    </select>
+                    <p id="promptErrorEmail" style="color: red;"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="emailCancel" onclick="emailSave('cancel')" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" id="emailSave" onclick="emailSave('save')" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>-->
